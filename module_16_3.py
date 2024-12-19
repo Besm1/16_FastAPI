@@ -34,6 +34,6 @@ async def put_user(user_id:str, username:Annotated[str, Path(..., min_length=5, 
 async def delete_user(user_id:str) -> str:
     try:
         users.pop(user_id)
-        return f'The user {user_id} is updated'
+        return f'The user {user_id} is deleted'
     except KeyError:
         raise HTTPException(status_code=404, detail=f"User {user_id} not found")
