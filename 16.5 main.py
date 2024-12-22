@@ -1,8 +1,10 @@
 from fastapi import FastAPI, status, Body, HTTPException
 from pydantic import BaseModel
 from typing import List
+from fastapi.templating import Jinja2Templates
 
-app = FastAPI()
+app = FastAPI(swagger_ui_parameters={"tryItOutEnabled": True}, debug=True)
+tmpl = Jinja2Templates(directory='templates')
 
 messages_db = []
 
