@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 users = []
 
-app = FastAPI()
+app = FastAPI(swagger_ui_parameters={"tryItOutEnabled": True}, debug=True)
 
 class User(BaseModel):
     id: int
@@ -21,25 +21,26 @@ async def get_all_users() -> List[User]:
 
 @app.post('/user/{username}/{age}')
 async def post_user(username:Annotated[str, Path(..., min_length=5, max_length=20)]
-                    , age:Annotated[int, Path(..., ge=18, le=120)]) -> str:
+                    , age:Annotated[int, Path(..., ge=18, le=120)]) -> User:
     idx = max((u_.id for u_ in users), default=0) + 1
     users.append(User(id=idx, username=username, age=age))
-    return f'User {idx} is registered'
+    return users[-1]
 
 @app.put('/user/{user_id}/{username}/{age}')
 async def put_user(user_id:int, username:Annotated[str, Path(..., min_length=5, max_length=20)]
-                    , age:Annotated[int, Path(..., ge=18, le=120)]) -> str:
+                    , age:Annotated[int, Path(..., ge=18, le=120)]) -> User:
     for u in users:
         if u.id == user_id:
             u.username = username
             u.age = age
-            return f'User {user_id} is updated'
+            return u
     raise HTTPException(status_code=404, detail=f"User {user_id} not found")
 
 @app.delete('/user/{user_id}')
-async def delete_user(user_id:int) -> str:
+async def delete_user(user_id:int) -> User:
     for i, u in enumerate(users):
         if u.id == user_id:
+            del_user = u
             del users[i]
-            return f'User {user_id} is deleted'
+            return u
     raise HTTPException(status_code=404, detail=f"User {user_id} not found")
