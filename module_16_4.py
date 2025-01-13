@@ -40,7 +40,6 @@ async def put_user(user_id:int, username:Annotated[str, Path(..., min_length=5, 
 async def delete_user(user_id:int) -> User:
     for i, u in enumerate(users):
         if u.id == user_id:
-            del_user = u
             del users[i]
             return u
     raise HTTPException(status_code=404, detail=f"User {user_id} not found")
